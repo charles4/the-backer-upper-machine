@@ -18,7 +18,7 @@ class Logger():
 	def note(self, msg):
 		try:
 			fp = open(self.path, "ab")
-			fp.write(str(time.time()) + "[+] " + msg + "\r\n")
+			fp.write(str(time.time()) + "[+] " + str(msg) + "\r\n")
 			fp.close()
 		except Exception, e:
 			print e
