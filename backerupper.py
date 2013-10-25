@@ -28,10 +28,10 @@ class Logger():
 
 class BackerUpper():
 
-	def __init__(self, root_directory, backup_root):
+	def __init__(self, target_dirs, backup_root):
 
 		self.backup_root = backup_root
-		self.root = root_directory
+		self.targets = target_dirs
 		self.tmppath = r"C:\backerupper"
 		if not os.path.exists(self.tmppath):
 			os.makedirs(self.tmppath)
@@ -41,21 +41,26 @@ class BackerUpper():
 			self.documents = pickle.load( fp )
 			fp.close()
 		except Exception, e:
-			print "the error was, " , e
+			print "Error opening documents.pickle" , e
 			self.documents = {}
 
 
 
 		self.logger = Logger(self.tmppath)
 
-	def compare(self):
+	def compare(self, target_dir):
+
+		start_time = time.time()
 
 		self.logger.note("Compare called.")
 
-		for root, dirs, files in os.walk(self.root):
+		for root, dirs, files in os.walk(target_dir):
 			#print root, dirs, files
 			#build backup path
-			backup_path = os.path.join(self.backup_root, root[2:])
+			if root[:2] == r"\\":
+				backup_path = os.path.join(self.backup_root, root[2:])
+			else:
+				backup_path = os.path.join(self.backup_root, root[3:])
 
 			### mirror folder and sub folders
 			for directory in dirs:
@@ -92,12 +97,12 @@ class BackerUpper():
 
 				### document exists and is modified 
 				else:
-					### udpate modified time
-					self.documents[full_name].modified = os.path.getmtime(full_name)
 					### copy file
 					try:
 						self.logger.note( "Updating ... " + os.path.join(backup_path, documentname))
 						shutil.copy(src=full_name, dst=os.path.join(backup_path, documentname))
+						### udpate modified time
+						self.documents[full_name].modified = os.path.getmtime(full_name)
 					except IOError, e:
 						self.logger.note( "Error updating document:")
 						self.logger.note(e)				
@@ -111,12 +116,18 @@ class BackerUpper():
 		finally:
 			fp.close()
 
+		end_time = time.time()
+
+		runtime = end_time - start_time
+		human_runtime = "Compare took %s seconds to run on %s." % (str(int(runtime)), target_dir)
+		self.logger.note(human_runtime) 
+
 	def run(self):
-		while True:
-			self.compare()
+		for target in self.targets:
+			self.compare(target)
 
 
 if __name__ == "__main__":
 
-	bu = BackerUpper(r'\\scsfilesrv\Personal\csteinke', r"C:\backup")
+	bu = BackerUpper([r'\\scsfilesrv\Personal\csteinke', r'C:\Users'], r"C:\backup")
 	bu.run()

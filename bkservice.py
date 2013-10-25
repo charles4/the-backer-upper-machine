@@ -46,12 +46,12 @@ class aservice(win32serviceutil.ServiceFramework):
         #Ok, here's the real money shot right here.
         #[actual service code between rests]
         try:
-          bu = BackerUpper(r'\\scsfilesrv\Personal\csteinke', r"C:\backup")
-          bu.compare()
+          bu = BackerUpper(r'\\scsfilesrv\Personal', r"C:\backup")
+          bu.run()
           # inc_file_path2 = "C:\whereever\MORE_REAL_py_work_to_be_done.py"
           # execfile(inc_file_path2)        #Execute the script
         except:
-          servicemanager.LogInfoMsg("BackerUpperPythonService -- ERROR unable to execute backkerupper.py")
+          servicemanager.LogInfoMsg("BackerUpperPythonService -- ERROR unable to execute BackerUpper.run()")
         #[actual service code between rests]
 
 
