@@ -30,7 +30,7 @@ class aservice(win32serviceutil.ServiceFramework):
 
     #self.timeout = 640000    #640 seconds / 10 minutes (value is in milliseconds)
     #self.timeout = 120000     #120 seconds / 2 minutes
-    self.timeout = 1000 * 60 * 15 #15 minutes
+    self.timeout = 1000 * 15 #15 minutes
     # This is how long the service will wait to run / refresh itself (see script below)
 
     while 1:
