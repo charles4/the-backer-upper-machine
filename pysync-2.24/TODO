@@ -1,0 +1,29 @@
+Outstanding Tasks
+-----------------
+
+The following is a list of things that are yet to do. Please remove
+items as they get done.
+
+  * distribution stuff
+
+    - Move the "test" directory to the more standard "tests".
+
+    - Make proper python unit tests that can be run using test.py.
+    
+    - Add support to Makefile for "make check".
+ 
+    - Change setup.py to better leverage librsync's library building.
+  
+  * implementation stuff
+  
+    - Break pysync.py up into seperate module and program scripts.
+    
+    - Seperate out the input data handling into a ScanBuffer class.
+    
+    - Add inverse delta calculation/patch classes.
+    
+    - Fix/improve the librsync wrapper (abandon swig?)
+    
+    - Make pysync fallback to md5 and adler32 when md4 and rollsum are
+    missing?
+    

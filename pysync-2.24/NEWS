@@ -1,0 +1,17 @@
+Updates between release 2.16 and 2.24
+-------------------------------------
+
+  * Added TODO and NEWS files.
+
+  * Changed to use psyco if available, giving a 33% speedup.
+  
+  * Updated to use librsync 0.9.6.
+  
+  * Changed to using a faster md4sum implementation based on the
+  librsync implementation, modified to use the RSA API.
+  
+  * Added rollin/rollout support to historical adler32.py.
+  
+  * Minor cleanups to rollsum code.
+  
+  * Minor tweaks to handling of block fragment matching.

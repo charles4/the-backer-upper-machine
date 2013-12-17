@@ -1,4 +1,4 @@
-import os, time, shutil, pickle
+ import os, time, shutil, pickle
 
 class Document():
 
@@ -13,12 +13,15 @@ class Document():
 class Logger():
 
 	def __init__(self, path):
+		if not os.path.exists(path):
+			os.makedirs(path)
 		self.path = os.path.join(path, "backerupper.log")
 
 	def note(self, msg):
 		try:
 			fp = open(self.path, "ab")
-			fp.write(str(time.time()) + "[+] " + str(msg) + "\r\n")
+			prettytime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+			fp.write("[+] " + str(prettytime) + "  " + str(msg) + "\r\n")
 			fp.close()
 		except Exception, e:
 			print e
