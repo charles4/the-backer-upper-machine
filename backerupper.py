@@ -88,7 +88,7 @@ class BackerUpper():
 					### copy document to backup location
 					try:
 						self.logger.note("Copying ... " + full_name + " to " + os.path.join(backup_path, documentname))
-						shutil.copy(src=full_name, dst=os.path.join(backup_path, documentname))
+						shutil.copy2(src=full_name, dst=os.path.join(backup_path, documentname))
 					except IOError, e:
 						self.logger.note("Error copying document:")
 						self.logger.note(e)
@@ -100,6 +100,14 @@ class BackerUpper():
 
 				### document exists and is modified 
 				else:
+					### copy backup file to alternate name
+					try:
+						self.logger.note("Versioning document ... " + os.path.join(backup_path, documentname))						
+						shutil.copy2(src=full_name, dst=os.path.join(backup_path, documentname + ".old"))
+					except IOError, e:
+						self.logger.note("Error versioning document: ")
+						self.logger.note(e)
+
 					### copy file
 					try:
 						self.logger.note( "Updating ... " + os.path.join(backup_path, documentname))
