@@ -1,4 +1,6 @@
- import os, time, shutil, pickle
+import os, time, shutil, pickle
+from datetime import datetime
+
 
 class Document():
 
