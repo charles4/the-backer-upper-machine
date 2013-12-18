@@ -87,6 +87,8 @@ class BackerUpper():
 					except WindowsError, e:
 						self.logger.note( "Error adding document to queue: ")
 						self.logger.note(e)
+						self.logger.note("root = " + root)
+						self.logger.note("documentname = " + documentname)
 					### copy document to backup location
 					try:
 						self.logger.note("Copying ... " + full_name + " to " + os.path.join(backup_path, documentname))
@@ -94,6 +96,8 @@ class BackerUpper():
 					except IOError, e:
 						self.logger.note("Error copying document:")
 						self.logger.note(e)
+						self.logger.note("root = " + root)
+						self.logger.note("documentname = " + documentname)
 
 
 				### document exists and is unmodified
