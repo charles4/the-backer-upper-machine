@@ -1,5 +1,6 @@
 import os, time, shutil, pickle
 from datetime import datetime
+import traceback, sys
 
 
 class Document():
@@ -147,8 +148,10 @@ class BackerUpper():
 			self.logger.note(human_runtime) 
 
 		except Exception, e:
+			trace = traceback.format_exc()
 			self.logger.note("General ERROR")
 			self.logger.note(e)
+			self.logger.note(trace)
 
 	def run(self):
 		for target in self.targets:
