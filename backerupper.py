@@ -84,9 +84,9 @@ class BackerUpper():
 	 			for documentname in files:
 	 				### only proceed if not ignoring that file
 	 				if documentname not in self.ignorefiles:
-	 					root = root.decode("utf-8").encode("utf-8")
-	 					documentname = documentname.decode("utf-8").encode("utf-8")
-		 				full_name = os.path.join(root, documentname).decode("utf-8").encode("utf-8")
+	 					root = root.decode("windows-1252").encode("utf-8")
+	 					documentname = documentname.decode("windows-1252").encode("utf-8")
+		 				full_name = os.path.join(root, documentname).decode("windows-1252").encode("utf-8")
 						### document does not exist in self.documents
 						if full_name not in self.documents:
 							### add to self.documents
@@ -155,7 +155,7 @@ class BackerUpper():
 
 	def run(self):
 		for target in self.targets:
-			self.compare(target.decode("utf-8").encode("utf-8"))
+			self.compare(target.decode("windows-1252").encode("utf-8"))
 
 
 if __name__ == "__main__":
