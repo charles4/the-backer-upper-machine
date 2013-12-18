@@ -57,96 +57,100 @@ class BackerUpper():
 
 	def compare(self, target_dir):
 
-		start_time = time.time()
-
-		self.logger.note("Compare called on %s." % target_dir)
-
-		for root, dirs, files in os.walk(target_dir):
-			#print root, dirs, files
-			#build backup path
-			if root[:2] == r"\\":
-				backup_path = os.path.join(self.backup_root, root[2:])
-			else:
-				backup_path = os.path.join(self.backup_root, root[3:])
-
-			### mirror folder and sub folders
-			for directory in dirs:
-				if not os.path.exists(os.path.join(backup_path, directory)):
-					self.logger.note( "Making: " + os.path.join(backup_path, directory) )
-					try:
-						os.makedirs(os.path.join(backup_path, directory))
-					except OSError, e:
-						self.logger.note( "Error making " + os.path.join(backup_path, directory) )
-						self.logger.note( e )
-
- 			for documentname in files:
- 				### only proceed if not ignoring that file
- 				if documentname not in self.ignorefiles:
- 					root = root.encode("utf-8")
- 					documentname = documentname.encode("utf-8")
-	 				full_name = os.path.join(root, documentname).encode("utf-8")
-					### document does not exist in self.documents
-					if full_name not in self.documents:
-						### add to self.documents
-						try:
-							self.documents[full_name] = Document(root, documentname, os.path.getmtime(full_name))
-						except WindowsError, e:
-							self.logger.note( "Error adding document to queue: ")
-							self.logger.note(e)
-							self.logger.note("root = " + root)
-							self.logger.note("documentname = " + documentname)
-						### copy document to backup location
-						try:
-							self.logger.note("Copying ... " + full_name + " to " + os.path.join(backup_path, documentname))
-							shutil.copy2(src=full_name, dst=os.path.join(backup_path, documentname))
-						except IOError, e:
-							self.logger.note("Error copying document:")
-							self.logger.note(e)
-							self.logger.note("root = " + root)
-							self.logger.note("documentname = " + documentname)
-
-
-					### document exists and is unmodified
-					elif os.path.getmtime(full_name) == self.documents[full_name].modified:
-						pass
-
-					### document exists and is modified 
-					else:
-						### copy backup file to alternate name
-						try:
-							self.logger.note("Versioning document ... " + os.path.join(backup_path, documentname))						
-							shutil.copy2(src=full_name, dst=os.path.join(backup_path, documentname + ".old"))
-						except IOError, e:
-							self.logger.note("Error versioning document: ")
-							self.logger.note(e)
-
-						### copy file
-						try:
-							self.logger.note( "Updating ... " + os.path.join(backup_path, documentname))
-							shutil.copy(src=full_name, dst=os.path.join(backup_path, documentname))
-							### udpate modified time
-							self.documents[full_name].modified = os.path.getmtime(full_name)
-						except IOError, e:
-							self.logger.note( "Error updating document:")
-							self.logger.note(e)				
-
 		try:
-			fp = open(os.path.join(self.tmppath, "documents.pickle"), "wb")
-			pickle.dump( self.documents, fp )
+			start_time = time.time()
+
+			self.logger.note("Compare called on %s." % target_dir)
+
+			for root, dirs, files in os.walk(target_dir):
+				#print root, dirs, files
+				#build backup path
+				if root[:2] == r"\\":
+					backup_path = os.path.join(self.backup_root, root[2:])
+				else:
+					backup_path = os.path.join(self.backup_root, root[3:])
+
+				### mirror folder and sub folders
+				for directory in dirs:
+					if not os.path.exists(os.path.join(backup_path, directory)):
+						self.logger.note( "Making: " + os.path.join(backup_path, directory) )
+						try:
+							os.makedirs(os.path.join(backup_path, directory))
+						except OSError, e:
+							self.logger.note( "Error making " + os.path.join(backup_path, directory) )
+							self.logger.note( e )
+
+	 			for documentname in files:
+	 				### only proceed if not ignoring that file
+	 				if documentname not in self.ignorefiles:
+	 					root = root.encode("utf-8")
+	 					documentname = documentname.encode("utf-8")
+		 				full_name = os.path.join(root, documentname).encode("utf-8")
+						### document does not exist in self.documents
+						if full_name not in self.documents:
+							### add to self.documents
+							try:
+								self.documents[full_name] = Document(root, documentname, os.path.getmtime(full_name))
+							except WindowsError, e:
+								self.logger.note( "Error adding document to queue: ")
+								self.logger.note(e)
+								self.logger.note("root = " + root)
+								self.logger.note("documentname = " + documentname)
+							### copy document to backup location
+							try:
+								self.logger.note("Copying ... " + full_name + " to " + os.path.join(backup_path, documentname))
+								shutil.copy2(src=full_name, dst=os.path.join(backup_path, documentname))
+							except IOError, e:
+								self.logger.note("Error copying document:")
+								self.logger.note(e)
+								self.logger.note("root = " + root)
+								self.logger.note("documentname = " + documentname)
+
+
+						### document exists and is unmodified
+						elif os.path.getmtime(full_name) == self.documents[full_name].modified:
+							pass
+
+						### document exists and is modified 
+						else:
+							### copy backup file to alternate name
+							try:
+								self.logger.note("Versioning document ... " + os.path.join(backup_path, documentname))						
+								shutil.copy2(src=full_name, dst=os.path.join(backup_path, documentname + ".old"))
+							except IOError, e:
+								self.logger.note("Error versioning document: ")
+								self.logger.note(e)
+
+							### copy file
+							try:
+								self.logger.note( "Updating ... " + os.path.join(backup_path, documentname))
+								shutil.copy(src=full_name, dst=os.path.join(backup_path, documentname))
+								### udpate modified time
+								self.documents[full_name].modified = os.path.getmtime(full_name)
+							except IOError, e:
+								self.logger.note( "Error updating document:")
+								self.logger.note(e)				
+
+			try:
+				fp = open(os.path.join(self.tmppath, "documents.pickle"), "wb")
+				pickle.dump( self.documents, fp )
+			except Exception, e:
+				self.logger.note("Error pickle dumping: ")
+				self.logger.note(e)
+			finally:
+				fp.close()
+
+			end_time = time.time()
+
+			runtime = end_time - start_time
+			human_runtime = "Compare took %s seconds to run on %s." % (str(int(runtime)), target_dir)
+			self.logger.note(human_runtime) 
+
 		except Exception, e:
-			self.logger.note("Error pickle dumping: ")
+			self.logger.note("General ERROR")
 			self.logger.note(e)
-		finally:
-			fp.close()
-
-		end_time = time.time()
-
-		runtime = end_time - start_time
-		human_runtime = "Compare took %s seconds to run on %s." % (str(int(runtime)), target_dir)
-		self.logger.note(human_runtime) 
 
 	def run(self):
-		self.logger.note("targets = " + str(self.targets))
 		for target in self.targets:
 			self.compare(target.encode("utf-8"))
 
