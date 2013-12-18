@@ -49,6 +49,8 @@ class BackerUpper():
 			print "Error opening documents.pickle" , e
 			self.documents = {}
 
+		self.ignorefiles = ["ntuser.pol"]
+
 
 
 		self.logger = Logger(self.tmppath)
@@ -78,51 +80,53 @@ class BackerUpper():
 						self.logger.note( e )
 
  			for documentname in files:
- 				full_name = os.path.join(root, documentname)
-				### document does not exist in self.documents
-				if full_name not in self.documents:
-					### add to self.documents
-					try:
-						self.documents[full_name] = Document(root, documentname, os.path.getmtime(full_name))
-					except WindowsError, e:
-						self.logger.note( "Error adding document to queue: ")
-						self.logger.note(e)
-						self.logger.note("root = " + root)
-						self.logger.note("documentname = " + documentname)
-					### copy document to backup location
-					try:
-						self.logger.note("Copying ... " + full_name + " to " + os.path.join(backup_path, documentname))
-						shutil.copy2(src=full_name, dst=os.path.join(backup_path, documentname))
-					except IOError, e:
-						self.logger.note("Error copying document:")
-						self.logger.note(e)
-						self.logger.note("root = " + root)
-						self.logger.note("documentname = " + documentname)
+ 				### only proceed if not ignoring that file
+ 				if documentname not in self.ignorefiles:
+	 				full_name = os.path.join(root, documentname)
+					### document does not exist in self.documents
+					if full_name not in self.documents:
+						### add to self.documents
+						try:
+							self.documents[full_name] = Document(root, documentname, os.path.getmtime(full_name))
+						except WindowsError, e:
+							self.logger.note( "Error adding document to queue: ")
+							self.logger.note(e)
+							self.logger.note("root = " + root)
+							self.logger.note("documentname = " + documentname)
+						### copy document to backup location
+						try:
+							self.logger.note("Copying ... " + full_name + " to " + os.path.join(backup_path, documentname))
+							shutil.copy2(src=full_name, dst=os.path.join(backup_path, documentname))
+						except IOError, e:
+							self.logger.note("Error copying document:")
+							self.logger.note(e)
+							self.logger.note("root = " + root)
+							self.logger.note("documentname = " + documentname)
 
 
-				### document exists and is unmodified
-				elif os.path.getmtime(full_name) == self.documents[full_name].modified:
-					pass
+					### document exists and is unmodified
+					elif os.path.getmtime(full_name) == self.documents[full_name].modified:
+						pass
 
-				### document exists and is modified 
-				else:
-					### copy backup file to alternate name
-					try:
-						self.logger.note("Versioning document ... " + os.path.join(backup_path, documentname))						
-						shutil.copy2(src=full_name, dst=os.path.join(backup_path, documentname + ".old"))
-					except IOError, e:
-						self.logger.note("Error versioning document: ")
-						self.logger.note(e)
+					### document exists and is modified 
+					else:
+						### copy backup file to alternate name
+						try:
+							self.logger.note("Versioning document ... " + os.path.join(backup_path, documentname))						
+							shutil.copy2(src=full_name, dst=os.path.join(backup_path, documentname + ".old"))
+						except IOError, e:
+							self.logger.note("Error versioning document: ")
+							self.logger.note(e)
 
-					### copy file
-					try:
-						self.logger.note( "Updating ... " + os.path.join(backup_path, documentname))
-						shutil.copy(src=full_name, dst=os.path.join(backup_path, documentname))
-						### udpate modified time
-						self.documents[full_name].modified = os.path.getmtime(full_name)
-					except IOError, e:
-						self.logger.note( "Error updating document:")
-						self.logger.note(e)				
+						### copy file
+						try:
+							self.logger.note( "Updating ... " + os.path.join(backup_path, documentname))
+							shutil.copy(src=full_name, dst=os.path.join(backup_path, documentname))
+							### udpate modified time
+							self.documents[full_name].modified = os.path.getmtime(full_name)
+						except IOError, e:
+							self.logger.note( "Error updating document:")
+							self.logger.note(e)				
 
 		try:
 			fp = open(os.path.join(self.tmppath, "documents.pickle"), "wb")
