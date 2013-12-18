@@ -37,7 +37,7 @@ class BackerUpper():
 
 		self.backup_root = backup_root
 		self.targets = target_dirs
-		self.tmppath = r"C:\backerupper"
+		self.tmppath = r"C:\backerupper".encode("utf-8")
 		if not os.path.exists(self.tmppath):
 			os.makedirs(self.tmppath)
 
@@ -147,7 +147,7 @@ class BackerUpper():
 
 	def run(self):
 		for target in self.targets:
-			self.compare(target)
+			self.compare(target.encode("utf-8"))
 
 
 if __name__ == "__main__":
