@@ -59,7 +59,7 @@ class BackerUpper():
 
 		start_time = time.time()
 
-		self.logger.note("Compare called.")
+		self.logger.note("Compare called on %s." % target_dir)
 
 		for root, dirs, files in os.walk(target_dir):
 			#print root, dirs, files
