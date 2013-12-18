@@ -84,9 +84,7 @@ class BackerUpper():
 	 			for documentname in files:
 	 				### only proceed if not ignoring that file
 	 				if documentname not in self.ignorefiles:
-	 					root = root.decode("windows-1252").encode("utf-8")
-	 					documentname = documentname.decode("windows-1252").encode("utf-8")
-		 				full_name = os.path.join(root, documentname).decode("windows-1252").encode("utf-8")
+		 				full_name = os.path.join(root, documentname)
 						### document does not exist in self.documents
 						if full_name not in self.documents:
 							### add to self.documents
@@ -149,13 +147,13 @@ class BackerUpper():
 
 		except Exception, e:
 			trace = traceback.format_exc()
-			self.logger.note("General ERROR")
+			self.logger.note("BIG ERROR")
 			self.logger.note(e)
 			self.logger.note(trace)
 
 	def run(self):
 		for target in self.targets:
-			self.compare(target.decode("windows-1252").encode("utf-8"))
+			self.compare(target)
 
 
 if __name__ == "__main__":
