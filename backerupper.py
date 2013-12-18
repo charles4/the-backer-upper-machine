@@ -146,6 +146,7 @@ class BackerUpper():
 		self.logger.note(human_runtime) 
 
 	def run(self):
+		self.logger.note("targets = " + str(self.targets))
 		for target in self.targets:
 			self.compare(target.encode("utf-8"))
 
