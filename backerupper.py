@@ -82,7 +82,9 @@ class BackerUpper():
  			for documentname in files:
  				### only proceed if not ignoring that file
  				if documentname not in self.ignorefiles:
-	 				full_name = os.path.join(root, documentname)
+ 					root = root.encode("utf-8")
+ 					documentname = documentname.encode("utf-8")
+	 				full_name = os.path.join(root, documentname).encode("utf-8")
 					### document does not exist in self.documents
 					if full_name not in self.documents:
 						### add to self.documents
