@@ -1,6 +1,7 @@
 import os, time, shutil, pickle
 from datetime import datetime
 import traceback, sys
+import hashlib
 
 
 class Document():
@@ -18,9 +19,41 @@ class Logger():
 	def __init__(self, path):
 		if not os.path.exists(path):
 			os.makedirs(path)
-		self.path = os.path.join(path, "backerupper.log")
+		self.path = os.path.join(path, "backerupper.1.log")
+		self.maxsize = 1000 * 1000 * 25 ### in bytes
+
+		if not os.path.exists(self.path):
+			try:
+				fp = open(self.path, "wb")
+				fp.write("~~~~~~~~~~~~ Backer Upper Log File ~~~~~~~~~~~\n")
+				fp.close()
+			except Exception, e:
+				print "Error touching log file."
+				print e
 
 	def note(self, msg):
+		if os.path.getsize(self.path) < self.maxsize:
+			self.write(msg)
+		else:
+			self.incrementfile()
+			self.write(msg)
+
+	def incrementfile(self):
+		i = 1
+		stop = False
+		while(not stop):
+			parts = self.path.split(".")
+			parts[-2] = str(i)
+			newpath = ".".join(parts)
+			
+			if not os.path.exists(newpath):
+				stop = True
+				self.path = newpath
+
+			i += 1 
+
+
+	def write(self, msg):
 		try:
 			fp = open(self.path, "ab")
 			prettytime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
@@ -31,14 +64,13 @@ class Logger():
 			print "Logging failed."
 
 
-
 class BackerUpper():
 
 	def __init__(self, target_dirs, backup_root):
 
 		self.backup_root = backup_root
 		self.targets = target_dirs
-		self.tmppath = r"C:\backerupper".encode("utf-8")
+		self.tmppath = r"C:\backerupper"
 		if not os.path.exists(self.tmppath):
 			os.makedirs(self.tmppath)
 
@@ -85,11 +117,15 @@ class BackerUpper():
 	 				### only proceed if not ignoring that file
 	 				if documentname not in self.ignorefiles:
 		 				full_name = os.path.join(root, documentname)
+		 				### use hash of full_name as dictonary key to avoid characterspace/encoding issues
+		 				sha = hashlib.sha256()
+		 				sha.update(full_name)
+		 				secret = sha.digest()
 						### document does not exist in self.documents
-						if full_name not in self.documents:
+						if secret not in self.documents:
 							### add to self.documents
 							try:
-								self.documents[full_name] = Document(root, documentname, os.path.getmtime(full_name))
+								self.documents[secret] = Document(root, documentname, os.path.getmtime(full_name))
 							except WindowsError, e:
 								self.logger.note( "Error adding document to queue: ")
 								self.logger.note(e)
@@ -123,9 +159,9 @@ class BackerUpper():
 							### copy file
 							try:
 								self.logger.note( "Updating ... " + os.path.join(backup_path, documentname))
-								shutil.copy(src=full_name, dst=os.path.join(backup_path, documentname))
+								shutil.copy2(src=full_name, dst=os.path.join(backup_path, documentname))
 								### udpate modified time
-								self.documents[full_name].modified = os.path.getmtime(full_name)
+								self.documents[secret].modified = os.path.getmtime(full_name)
 							except IOError, e:
 								self.logger.note( "Error updating document:")
 								self.logger.note(e)				
