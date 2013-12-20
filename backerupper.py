@@ -25,7 +25,7 @@ class Logger():
 		if not os.path.exists(self.path):
 			try:
 				fp = open(self.path, "wb")
-				fp.write("~~~~~~~~~~~~ Backer Upper Log File ~~~~~~~~~~~\n")
+				fp.write("~~~~~~~~~~~~ Backer Upper Log File ~~~~~~~~~~~\r\n")
 				fp.close()
 			except Exception, e:
 				print "Error touching log file."
@@ -143,7 +143,7 @@ class BackerUpper():
 
 
 						### document exists and is unmodified
-						elif os.path.getmtime(full_name) == self.documents[full_name].modified:
+						elif os.path.getmtime(full_name) == self.documents[secret].modified:
 							pass
 
 						### document exists and is modified 
